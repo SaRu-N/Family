@@ -1,13 +1,130 @@
 from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+import json
+from rest_framework.renderers import JSONRenderer
+from rest_framework.parsers import JSONParser
+from django.http import HttpResponse,JsonResponse
 from .models import Person,GrandFather,GrandMother,Father,Mother,Son,Daughter
 from .serializers import PersonSerializer,GrandFatherSerializer,GrandMotherSerializer,FatherSerializer,MotherSerializer,SonSerializer,DaughterSerializer
 
+# Get Family 
+@api_view(['GET'])
+# @renderer_classes([JSONRenderer])
+def getfamily(request,pk):
+    try:
+        person= Person.objects.get(pk=pk)
+    except:
+        return HttpResponse("Person Does Not Exist")
+    if hasattr(person,'grandfather')==True:
+        print("GrandFather")
+        per=person.grandfather
+        name=per.person.name
+        sons=[son.person.name for son in per.son.all() ]
+        daughters=[daughter.person.name for daughter in per.daughter.all()]
+        grandsons=[grandson.person.name for grandson in per.grandson.all() ]
+        granddaughters=[granddaughter.person.name for granddaughter in per.granddaughter.all()]
+
+        data={
+            'me':name,
+            'sons':sons,
+            'daughters':daughters,
+            'grandsons':grandsons,
+            'granddaughters':granddaughters,
+
+        }
+        return JsonResponse(data)
+    
+    elif hasattr(person,'grandmother')==True:
+        print("GrandMother")
+        per=person.grandmother
+        name=per.person.name
+        sons=[son.person.name for son in per.son.all() ]
+        daughters=[daughter.person.name for daughter in per.daughter.all()]
+        grandsons=[grandson.person.name for grandson in per.grandson.all() ]
+        granddaughters=[granddaughter.person.name for granddaughter in per.granddaughter.all()]
+        data={
+            'me':name,
+            'sons':sons,
+            'daughters':daughters,
+            'grandsons':grandsons,
+            'granddaughters':granddaughters,
+        }
+        return JsonResponse(data)
+    elif hasattr(person,'father')==True:
+        print("Father")
+        per=person.father
+        # print(per)
+        name=per.person.name
+        father=per.father.person.name
+        mother=per.mother.person.name
+        sons=[son.person.name for son in per.son.all() ]
+        daughters=[daughter.person.name for daughter in per.daughter.all()]
+        data={
+            'me':name,
+            'father':father,
+            'mother':mother,
+            'sons':sons,
+            'daughters':daughters,
+        }
+        return JsonResponse(data)
+    elif hasattr(person,'mother')==True:
+        print("Mother")
+        per=person.mother
+        name=per.person.name
+        father=per.father.person.name
+        mother=per.mother.person.name
+        sons=[son.person.name for son in per.son.all() ]
+        daughters=[daughter.person.name for daughter in per.daughter.all()]
+        data={
+            'me':name,
+            'father':father,
+            'mother':mother,
+            'sons':sons,
+            'daughters':daughters,
+        }
+        return JsonResponse(data)
+    elif hasattr(person,'son')==True:
+        print("Son")
+        per=person.son
+        name=per.person.name
+        grandfather=per.grandfather.person.name
+        father=per.father.person.name
+        mother=per.mother.person.name
+        brothers=[brother.person.name for brother in per.brother.all() ]
+        sisters=[sister.person.name for sister in per.sister.all()]
+        data={
+            'me':name,
+            'grandfather':grandfather,
+            'father':father,
+            'mother':mother,
+            'brothers':brothers,
+            'sisters':sisters,
+        }
+        return JsonResponse(data)
+    elif hasattr(person,'daughter')==True:
+        print("Daughter")
+        per=person.daughter
+        name=per.person.name
+        father=per.father.person.name
+        mother=per.mother.person.name
+        brothers=[brother.person.name for brother in per.brother.all() ]
+        sisters=[sister.person.name for sister in per.sister.all()]
+        data={
+            'me':name,
+            'father':father,
+            'mother':mother,
+            'brothers':brothers,
+            'sisters':sisters,
+        }
+        return JsonResponse(data)
+    
+    return HttpResponse("Person does not have any family!!")
 
 # Home Page
 def home(request):
     return render(request, 'home.html')
+
 # Person
 @api_view(['GET','POST','PUT','PATCH','Delete'])
 def person_api(request,pk=None):
@@ -285,4 +402,6 @@ def daughter_api(request,pk=None):
         daughter=Daughter.objects.get(pk=id)
         daughter.delete()
         return Response({'msg':"Daughter Removed"})
+
+
 

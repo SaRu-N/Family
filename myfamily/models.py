@@ -35,7 +35,7 @@ class Son(models.Model):
     father=models.ForeignKey(Father,on_delete=models.CASCADE, related_name='son')
     mother=models.ForeignKey(Mother,on_delete=models.CASCADE, related_name='son')
     brother=models.ManyToManyField("self",blank=True)
-    sister=models.ManyToManyField("Daughter",related_name='brother')
+    sister=models.ManyToManyField("Daughter",blank=True,related_name='brother')
     grandmother=models.ForeignKey(GrandMother,on_delete=models.CASCADE, related_name='grandson')
     grandfather=models.ForeignKey(GrandFather,on_delete=models.CASCADE, related_name='grandson')
     def sisters(self):

@@ -19,4 +19,6 @@ urlpatterns = [
     path('sonapi/<int:pk>/',views.son_api,name='sonapi'),
     path('daughterapi/',views.daughter_api,name='daughterapi'),
     path('daughterapi/<int:pk>/',views.daughter_api,name='daughterapi'),
+         
+    path('tree/<int:pk>/',views.getfamily)
 ]
